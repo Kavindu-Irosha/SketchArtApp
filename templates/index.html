@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image to Sketch Converter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Madimi+One&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: rgb(27, 27, 27);
+        }
+        h1 {
+            color: white;
+            font-size: 50px;
+            font-weight: bold;
+            text-align: center;
+            font-family: "Madimi One", sans-serif;
+        }
+
+        img {
+            height: auto;
+            margin-top: 20px;
+            width: 500px;
+            border-radius: 20px;
+            margin-left: 50px;
+        }
+        .custom-file-upload {
+            width: 220px;
+            font-family: "Madimi One", sans-serif;
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .custom-file-upload:hover {
+            background-color: #2980b9;
+            width: 220px;
+        }
+
+        /* Hide default file input */
+        input[type="file"] {
+            display: none;
+        }
+
+        #sketch {
+            margin-top: 30px;
+            padding: 10px;
+            background-color: #3498db;
+            color: white;
+            font-family: "Madimi One", sans-serif;
+            border-radius: 20px;
+            border: none;
+            width: 220px;
+            transition: background-color 0.3s ease;
+        }
+        #sketch:hover {
+            cursor: pointer;
+            padding: 10px;
+            background-color: #2980b9;
+            color: white;
+            font-family: "Madimi One", sans-serif;
+            border-radius: 20px;
+            border: none;
+            width: 220px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Image to Sketch Converter</h1>
+    <center>
+        <label for="fileInput" class="custom-file-upload">Choose Image</label>
+        <input type="file" id="fileInput" accept="image/*">
+    
+        <div id="imagesContainer">
+            <img id="originalImage">
+            <img id="sketchImage">
+        </div>
+        <div class="downloadBtn">
+            <button id="sketch" onclick="downloadSketch()">Download Sketch</button>
+        </div>
+    </center>
+
+    <script>
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            var file = event.target.files[0];
+            var formData = new FormData();
+            formData.append('image', file);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('originalImage').src = URL.createObjectURL(file);
+                document.getElementById('sketchImage').src = 'data:image/jpeg;base64,' + data.sketch;
+
+                // Trigger download of sketch image
+                    var downloadLink = document.createElement('a');
+                    downloadLink.href = 'data:image/jpeg;base64,' + data.sketch;
+                    downloadLink.download = 'sketch.jpg';
+                    downloadLink.click();
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
