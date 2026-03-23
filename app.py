@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, render_template
 import cv2
 import numpy as np
 import base64
+import os
 
 app = Flask(__name__)
 
@@ -45,4 +46,4 @@ def upload():
     return jsonify({'sketch': sketch_base64})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
